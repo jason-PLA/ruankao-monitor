@@ -24,3 +24,6 @@ on:
                                                                                                                                         context: .
                                                                                                                                                     push: true
                                                                                                                                                                 tags: jasonpla/ruankao-monitor:latest
+
+
+
