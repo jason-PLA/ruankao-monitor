@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  ruankao-monitor:
+    build: .
+    container_name: ruankao-monitor
+    restart: always
+    volumes:
+      # 配置文件挂载（方便修改配置无需重建镜像）
+      - ./config.yaml:/app/config.yaml
+      # 日志持久化
+      - ./logs:/app/logs
+    environment:
+      - TZ=Asia/Shanghai
+    # 资源限制（NAS友好）
+    mem_limit: 128m
+    cpus: 0.25

@@ -1,0 +1,44 @@
+# ========================================
+# 软考成绩通知监控 - 配置文件
+# ========================================
+
+# 检查间隔（秒），建议不低于60秒，避免过于频繁
+check_interval_seconds: 300
+
+# 搜索关键字（所有关键字都要匹配才算命中）
+# 2026上半年 -> "2026年上半年" + "成绩查询"
+keywords:
+  - "2026年上半年"    # 替换为你想查询的年份，我这里是查询2026
+  - "成绩查询"
+
+# 找到通知后是否停止程序
+stop_after_found: false
+
+# ---- 邮件通知 ----
+email:
+  enabled: true
+  smtp_server: "smtp.qq.com"        # QQ邮箱SMTP（可换成其他）
+  smtp_port: 465
+  use_ssl: true
+  sender: "your_email@qq.com"       # 替换为你的发件邮箱
+  password: "your_smtp_auth_code"   # 替换为你的SMTP授权码（非登录密码）
+  receiver: "receiver_email@qq.com" # 替换为收件邮箱
+
+# ---- Webhook通知（可选，填一种就行）----
+webhook:
+  enabled: false
+  # 支持类型: wechat_work / dingtalk / serverchan / bark / generic
+  type: "serverchan"
+  url: "https://sctapi.ftqq.com/你的SendKey.send"
+
+  # --- 企业微信示例 ---
+  # type: "wechat_work"
+  # url: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=你的KEY"
+
+  # --- 钉钉示例 ---
+  # type: "dingtalk"
+  # url: "https://oapi.dingtalk.com/robot/send?access_token=你的TOKEN"
+
+  # --- Bark (iOS推送) 示例 ---
+  # type: "bark"
+  # url: "https://api.day.app/你的BarkKey"

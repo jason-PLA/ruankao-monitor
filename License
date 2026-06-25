@@ -1,0 +1,59 @@
+*(注意：把里面的 `你的GitHub用户名` 和 `your-dockerhub-username` 替换成你自己的)*
+
+---
+
+### 第三步：添加开源协议 (LICENSE)
+
+推荐使用 **MIT 协议**（最宽松，允许别人随便用）。
+在项目根目录创建一个名为 `LICENSE` 的文件（无后缀），填入 MIT 协议标准文本（可以在 GitHub 新建文件时自动生成，或者去 [opensource.org/licenses/MIT](https://opensource.org/licenses/MIT) 复制，记得把 `Copyright (c) [year] [fullname]` 改成 `Copyright (c) 2026 你的名字`）。
+
+---
+
+### 第四步：进阶！配置 GitHub Actions 自动构建镜像 (强烈推荐)
+
+作为一个资深项目，不能让用户自己去 `docker build`。我们要让 GitHub 自动把代码打包成 Docker 镜像，并发布到 Docker Hub。这样别人只需要 `docker pull` 就能用。
+
+1. 在你的 GitHub 账号设置里，去 Docker Hub 申请一个 Access Token。
+2. 在你的 GitHub 仓库设置 (Settings -> Secrets and variables -> Actions) 中添加两个 Secret：
+   - `DOCKERHUB_USERNAME`：你的 Docker Hub 用户名
+   - `DOCKERHUB_TOKEN`：你的 Docker Hub Token
+3. 在项目中创建文件 `.github/workflows/docker-publish.yml`：
+
+```yaml
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64 # 同时支持 x86 和 ARM (飞牛/群晖/树莓派通吃)
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/ruankao-monitor:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/ruankao-monitor:${{ github.sha }}
