@@ -1,23 +1,26 @@
-name: Docker Image CI
+name: Docker Build and Push
+
 on:
-    push:
-          branches: [ main ]  # 监听 main 分支的推送
-          jobs:
-              build-and-push:
-                    runs-on: ubuntu-latest
-                          steps:
-                                  - name: Checkout code
-                                            uses: actions/checkout@v4
-                                                    
-                                                    - name: Log in to Docker Hub
-                                                              uses: docker/login-action@v3
-                                                                        with:
-                                                                                    username: ${{ secrets.DOCKERHUB_USERNAME }}
-                                                                                                password: ${{ secrets.DOCKERHUB_TOKEN }}
-                                                                                                        
-                                                                                                        - name: Build and push
-                                                                                                                  uses: docker/build-push-action@v5
-                                                                                                                            with:
-                                                                                                                                        context: .
-                                                                                                                                                    push: true
-                                                                                                                                                                tags: ${{ secrets.DOCKERHUB_USERNAME }}/ruankao-monitor:latest  # 替换为你的镜像名
+  push:
+    branches: [ "main" ] # 当推送到 main 分支时触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: jasonpla/ruankao-monitor:latest # 修改为你的镜像名
