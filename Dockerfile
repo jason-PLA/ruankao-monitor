@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua
 
 # 复制程序文件
 COPY monitor.py .
-COPY config.yaml .
+# COPY config.yaml .
 
 # 创建日志目录
 RUN mkdir -p /app/logs
